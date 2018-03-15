@@ -23,15 +23,11 @@ library(picante)
 2. Open your tree, edit and plot
 
 ```{r}
-mytree <- read.nexus("sequencedef.nex.con.tre")
-#you may do this practice with also with the RAXML tree
-#mytree <- read.tree("RAxML_bipartitions.sequencedef.tre")
+mytree <- read.tree("cervunales.dated.tree")
 mytree
 plot(mytree)
 plot(mytree, cex = 0.7)
 nodelabels()
-mytree <- root(mytree, node = 45)
-mytree <- root(mytree, node = 45)
 plot(mytree, cex = 0.5)
 
 ```
