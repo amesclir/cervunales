@@ -1,0 +1,76 @@
+---
+title: "cervunales"
+author: "Estefania&Marcial"
+date: "03/15/2018"
+output: html_document
+---
+1. Install and load packages
+
+```{r}
+install.packages("picante")
+#This will install also package dependences
+library(picante)
+#This will also load package dependences
+#library(ape)
+#library(vegan)
+#library(permute)
+#library(lattice)
+#library(nlme)
+
+
+```
+
+2. Open your tree, edit and plot
+
+```{r}
+mytree <- read.nexus("sequencedef.nex.con.tre")
+#you may do this practice with also with the RAXML tree
+#mytree <- read.tree("RAxML_bipartitions.sequencedef.tre")
+mytree
+plot(mytree)
+plot(mytree, cex = 0.7)
+nodelabels()
+mytree <- root(mytree, node = 45)
+mytree <- root(mytree, node = 45)
+plot(mytree, cex = 0.5)
+
+```
+
+
+3. Open presence / absense matrix. Spring vs. Fall.
+
+```{r}
+mydata <- read.csv("mydata.txt", sep = ";")
+mydata
+rownames(mydata) = mydata[,1]
+plot(mytree,use.edge.length=FALSE, label.offset=1.3, no.margin=TRUE, cex=0.5)
+co<-c("blue","red")
+tiplabels(pch=22, bg=co[as.numeric(mydata[mytree$tip.label,3]+1)], col=co[as.numeric(mydata[mytree$tip.label,3]+1)], cex=0.5, adj=0.5)
+tiplabels(pch=22, bg=co[as.numeric(mydata[mytree$tip.label,4]+1)], col=co[as.numeric(mydata[mytree$tip.label,4]+1)], cex=0.5, adj=1)
+
+```
+
+4. Calculate phylogenetic diversity statistics.
+
+```{r}
+color.plot.phylo(mytree, mydata, "Spring", "Species")
+color.plot.phylo(mytree, mydata, "Fall", "Species")
+rownames(mydata) = mydata[,1]
+mpd(t(mydata[,-c(1)]), cophenetic(mytree), abundance.weighted=F)
+mntd(t(mydata[,-c(1)]), cophenetic(mytree), abundance.weighted=F)
+mpd(t(mydata[,-c(1,2)]), cophenetic(mytree), abundance.weighted=F)
+mntd(t(mydata[,-c(1,2)]), cophenetic(mytree), abundance.weighted=F)
+
+comdist(t(mydata[,-c(1)]), cophenetic(mytree), abundance.weighted=F)
+comdistnt(t(mydata[,-c(1)]), cophenetic(mytree), abundance.weighted=F,exclude.conspecifics = T)
+comdist(t(mydata[,-c(1,2)]), cophenetic(mytree), abundance.weighted=F)
+comdistnt(t(mydata[,-c(1,2)]), cophenetic(mytree), abundance.weighted=F,exclude.conspecifics = T)
+
+comm.phylo.cor.r <- comm.phylo.cor(t(mydata[,-c(1,2)]), mytree, metric="cij",null.model="sample.taxa.labels")
+#negative clustering!!!! (positive overdispersion)
+par(mai=c(1.02,0.82,0.82,0.42))
+hist(comm.phylo.cor.r$random.corrs)
+abline(v=comm.phylo.cor.r$obs.corr)
+
+```
+
