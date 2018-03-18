@@ -108,3 +108,60 @@ abline(v=comm.phylo.cor.r$obs.corr)
 
 ```
 
+5. Loading data set Gredos vs. Sierra Nevada
+
+```{r}
+
+mydata2 <- read.csv("mydata2.csv", sep = ",")
+mydata2
+rownames(mydata2) = mydata2[,1]
+setdiff(mydata2[,1], mytree$tip.label)
+setdiff(mytree$tip.label,mydata2[,1])
+
+```
+6. Calculate phylogenetic diversity statistics.
+
+```{r}
+color.plot.phylo(mytree, mydata2, "GR", "Especie_epiteto", leg.cex = 0.6, main = "Gredos") 
+color.plot.phylo(mytree, mydata2, "SN", "Especie_epiteto", leg.cex = 0.6, main = "Sierra Nevada") 
+
+mypd2 <- pd(t(mydata2[,-c(1,2)]), mytree, include.root=TRUE)
+mypd2
+
+mympd2 <- mpd(t(mydata2[,-c(1,2)]), cophenetic(mytree), abundance.weighted=T)
+mympd2
+myresults12 <- cbind(mypd2, mympd2)
+
+mymntd2 <- mntd(t(mydata2[,-c(1,2)]), cophenetic(mytree), abundance.weighted=T)
+mymntd2
+myresults22 <- cbind(myresults12, mymntd2)
+colnames(myresults22) <- c("PD", "SR", "MPD", "MNTD")
+write.table(myresults22, file = "diversity_index_results_GRvsSN.txt")
+
+my.ses.pd2 <- ses.pd(t(mydata2[,-c(1,2)]), mytree, null.model = "taxa.labels",
+runs = 999)
+my.ses.pd2
+write.table(my.ses.pd2, file="ses.pd.result.GRvsSN.txt")
+
+my.ses.mpd2 <- ses.mpd(t(mydata2[,-c(1,2)]), cophenetic(mytree), null.model = "taxa.labels",
+abundance.weighted = T, runs = 999)
+my.ses.mpd2
+write.table(my.ses.mpd2, file="ses.mpd.result.GRvsSN.txt")
+
+
+my.ses.mntd2 <- ses.mntd(t(mydata2[,-c(1,2)]), cophenetic(mytree), null.model = "taxa.labels",
+abundance.weighted = T, runs = 999)
+my.ses.mntd2
+write.table(my.ses.mntd2, file="ses.mntd.result.GRvsSN.txt")
+
+
+
+comm.phylo.cor.r2 <- comm.phylo.cor(t(mydata2[,-c(1,2)]), mytree, metric="cij",null.model="sample.taxa.labels")
+comm.phylo.cor.r2
+par(mai=c(1.02,0.82,0.82,0.42))
+hist(comm.phylo.cor.r2$random.corrs)
+abline(v=comm.phylo.cor.r2$obs.corr)
+
+```
+
+
